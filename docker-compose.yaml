@@ -1,0 +1,31 @@
+version : “3”
+services:
+  db:
+    container_name: CASPER_API_DB
+    image: mysql
+    env_file:
+     - ./.env
+    environment:
+        MYSQL_DATABASE: ${CASPER_MYSQL_DB}
+        MYSQL_USER: ${CASPER_MYSQL_USER}
+        MYSQL_PASSWORD: ${CASPER_MYSQL_PW}
+        MYSQL_ROOT_PASSWORD: ${CASPER_MYSQL_ROOTPW}
+    volumes:
+        - ./db/data:/var/lib/mysql:rw
+    ports:
+        - “3308:3306”
+    restart: always
+  app:
+    container_name: CASPER_SPRING_API
+    image: openjdk:11-jre-slim
+    env_file:
+     - ./.env
+    ports:
+        - “8082:8082”
+    volumes:
+        - ./app:/app
+    working_dir: /app
+    command: ["java","-jar","app.jar"]
+    depends_on:
+        - db
+    restart: always
